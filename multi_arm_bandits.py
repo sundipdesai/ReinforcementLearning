@@ -33,6 +33,11 @@ class multi_arm_bandit_testbed():
         self.opt_init = opt_init
         self.ucb = ucb
         self.c = c
+    
+    def breakTies(self,Q):
+        #break ties randomly
+        ties=[x for x,q in enumerate(Q) if q == max(Q)]
+        return np.random.choice(ties)
         
     def multi_arm_bandit_run(self):  
         for run in range(self.runs):
@@ -44,10 +49,10 @@ class multi_arm_bandit_testbed():
             for step in range(self.steps):            
                 if self.epsilon > np.random.rand(): # explore randomly with a probability of epsilon 
                     self.action = np.random.randint(0,self.num_arms)
-                elif self.ucb: # apply upper bound uncertainty to estimate and take best estimate (UCB)   
-                    self.action = np.argmax(np.add(self.Q,self.c*np.sqrt(np.log(step+1)/self.N)))                
+                elif self.ucb: # apply upper bound uncertainty to estimate and take best estimate (UCB)  
+                    self.action = self.breakTies(np.add(self.Q,self.c*np.sqrt(np.log(step+1)/self.N)))          
                 else:  # greedy approach
-                    self.action = np.argmax(self.Q)
+                    self.action = self.breakTies(self.Q)
                 tmp_action = self.action
                 self.N[tmp_action] += 1
                 # update the value estimate for the current action
