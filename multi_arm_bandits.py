@@ -24,7 +24,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class multi_arm_bandit_testbed():
-    def __init__(self,num_arms=10, num_steps=1000, num_runs=2000, epsilon=-1.0, opt_init=0, ucb=False, c=2):
+    def __init__(self,num_arms=10, num_steps=1000, num_runs=200, epsilon=-1.0, opt_init=0, ucb=False, c=2):
         self.num_arms = num_arms
         self.steps = num_steps
         self.runs = num_runs
