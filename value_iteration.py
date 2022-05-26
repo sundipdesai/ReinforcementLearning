@@ -71,7 +71,7 @@ actions = [(-1,0), (1,0), (0,-1),(0,1)]
 biggest_change = -1 # Biggest change in value for any state 's' between timestep t and t+1
 eps = 0.001 # tolerance for convergence (to stop learning)
 
-def getNewState(s,a):
+def getNewState(s,a,nr,nc):
     '''
     Returns indicies of next state, given current state, s, and action, a
     
@@ -86,9 +86,9 @@ def getNewState(s,a):
     horz = s[1] + a[1]
     
     # Agent stays in current state if it hits a wall
-    if vert > num_rows-1 or vert < 0:
+    if vert > nr-1 or vert < 0:
         return s
-    elif horz > num_cols-1 or horz < 0:
+    elif horz > nc-1 or horz < 0:
         return s
     return (vert,horz)
 
@@ -102,8 +102,6 @@ def getRandomAction(a,k):
     random_index = np.random.randint(0,len(a)-1)
     random_action = [i for i in range(len(a)) if i != k]
     return a[random_action[random_index]]
-
-
 #%% Value iteration
 unconverged = False
 it = 0
@@ -114,11 +112,11 @@ while not unconverged:
         v_best = v_old[s[0]][s[1]]
         for k, a in enumerate(actions): 
             # get new state
-            s_prime = getNewState(s,a)
+            s_prime = getNewState(s,a,num_rows,num_cols)
             
             # get random action
             a_rand = getRandomAction(actions, k)
-            s_rand = getNewState(s,a_rand)        
+            s_rand = getNewState(s,a_rand,num_rows,num_cols)        
                         
             # Update the value for state 's'        
             v_new = noise*(R[s[0]][s[1]] + gamma*(v_old[s_prime[0]][s_prime[1]])) + (1-noise)*(R[s[0]][s[1]] + gamma*v_old[s_rand[0]][s_rand[1]])
@@ -129,8 +127,7 @@ while not unconverged:
     
         # check if the biggest deviation in value is < eps                 
         delta = abs(v_best - v_old[s[0]][s[1]])  
-        if delta > biggest_change:
-            biggest_change = delta
+        biggest_change = max(delta, biggest_change)
                    
     if biggest_change < eps: 
         unconverged = True
@@ -141,11 +138,7 @@ print("Number of iterations: ", str(it))
 print("Final value function:")
 print(V)
 #%% END
-'''
-Notes:
-    
 
-'''
 
 
 
